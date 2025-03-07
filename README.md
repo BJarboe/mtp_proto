@@ -11,3 +11,5 @@ MTB is a software tool that scrapes video resources and pipes them directly to a
 - YT-DLP API
 - Discord API
 - developed in WSL
+---
+Note:  This is what I personally use now.  You can find an early prototype [here](https://github.com/BJarboe/PortfolioRepo/tree/main/YouTube%20HUB)
