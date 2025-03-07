@@ -1,6 +1,5 @@
 import os, re
 
-os.chdir('output')
 
 class Media:
     def __init__(self, name, link):
@@ -9,9 +8,9 @@ class Media:
 
 
 def read_queue():
-    prev_files = os.listdir('.')
+    prev_files = os.listdir('output/.')
 
-    with open('../queue.txt', 'r') as f:
+    with open('queue', 'r') as f:
         lines = f.read().splitlines()
     
     media = []
@@ -32,7 +31,11 @@ def parse_hash(media):
     pattern = r'/p/([^/]+)/' # extract hash
 
     for video in media:
-        match = re.search(pattern, video.link).group(1)
+        match = re.search(pattern, video.link)
+        if not match:
+            match = video.link
+        else:
+            match = match.group(1)
         hash[match] = video
     return hash
 
@@ -44,16 +47,17 @@ def download(queue):
     os.system(command)
 
 
-def export(hash):
-    files = os.listdir('.')
+def file_sort(hash):
+    files = os.listdir('output/.')
+    print(f'Files listed: {files}')
     pattern = r"\[([A-Za-z0-9_\-]+)\]"
     for file in files:
         try:
             if 'Video' not in file:
                 continue
             match = re.search(pattern, file).group(1)
-            if hash[match]:
-                command = 'move \"' + file + '\" \"' + hash[match].name + '.mp4\"'
+            if match and hash[match]:
+                command = 'mv output/\"' + file + '\" output/\"' + hash[match].name + '.mp4\"'
                 os.system(command)
         except Exception as e:
             print(f'File Error: {file} | {e}')
@@ -62,9 +66,8 @@ def export(hash):
 def main():
     media_queue = read_queue()
     hash = parse_hash(media_queue)
-    # download(media_queue)
-    export(hash)
-
+    download(media_queue)
+    file_sort(hash)
 
 if __name__ == '__main__':
     main()
